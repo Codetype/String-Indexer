@@ -1,12 +1,13 @@
 package pl.pgedlek;
 
+import java.nio.CharBuffer;
 import java.util.*;
+import java.util.stream.Stream;
 
 class StringIndexer {
     private String input;
     private static final String squareBracketsRegex = "[\\[\\]]";
     private static final String specialCharactersRegex = "[^a-zA-Z0-9\\s+]";
-    private static final String inputCharacters = "abcdefghijklmnopqrstuvwxyz";
 
     StringIndexer(String input){
         this.input = input;
@@ -16,9 +17,9 @@ class StringIndexer {
         this.input = input;
     }
 
-    private String buildResult(Map<Character, ArrayList<String>> letterOccurenceMap) {
+    private String buildResult(Map<Character, List<String>> letterOccurenceMap) {
         StringBuilder stringResult = new StringBuilder();
-        for (Map.Entry<Character, ArrayList<String>> entry : letterOccurenceMap.entrySet()) {
+        for (Map.Entry<Character, List<String>> entry : letterOccurenceMap.entrySet()) {
             stringResult.append(entry.getKey());
             stringResult.append(": ");
             stringResult.append(entry.getValue().toString().replaceAll(squareBracketsRegex, ""));
@@ -29,7 +30,7 @@ class StringIndexer {
     }
 
     String transform() {
-        Map<Character, ArrayList<String>> letterOccurrenceMap = new TreeMap<Character, ArrayList<String>>();
+        Map<Character, List<String>> letterOccurrenceMap = new TreeMap<>();
 
         if(input.equals("")) {
             return input;
@@ -39,23 +40,24 @@ class StringIndexer {
         input = input.replaceAll(specialCharactersRegex, "");
 
         String[] words = input.split(" ");
+        Arrays.stream(words).parallel().forEach(word ->
+                CharBuffer.wrap(word).chars().parallel().forEach(letter ->
+                        {
+                            List<String> letterWordsList = letterOccurrenceMap.get((char)letter);
 
-        for(String word : words) {
-            for(Character letter : word.toCharArray()){
-                ArrayList<String> letterWordsList = letterOccurrenceMap.get(letter);
+                            if(letterWordsList == null){
+                                letterWordsList = Collections.synchronizedList(new ArrayList<>());
+                            }
 
-                if(letterWordsList == null){
-                    letterWordsList = new ArrayList<String>();
-                }
+                            if(!letterWordsList.contains(word)){
+                                letterWordsList.add(word);
+                                Collections.sort(letterWordsList);
+                            }
 
-                if(!letterWordsList.contains(word)){
-                    letterWordsList.add(word);
-                    Collections.sort(letterWordsList);
-                }
-
-                letterOccurrenceMap.put(letter, letterWordsList);
-            }
-        }
+                            letterOccurrenceMap.put((char)letter, letterWordsList);
+                        }
+                )
+        );
 
         return buildResult(letterOccurrenceMap);
     }
