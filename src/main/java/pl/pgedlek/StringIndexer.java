@@ -1,9 +1,6 @@
 package pl.pgedlek;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 class StringIndexer {
     private String input;
@@ -32,7 +29,7 @@ class StringIndexer {
     }
 
     String transform() {
-        Map<Character, ArrayList<String>> letterOccurrenceMap = new LinkedHashMap<Character, ArrayList<String>>();
+        Map<Character, ArrayList<String>> letterOccurrenceMap = new TreeMap<Character, ArrayList<String>>();
 
         if(input.equals("")) {
             return input;
@@ -43,22 +40,20 @@ class StringIndexer {
 
         String[] words = input.split(" ");
 
-        for(Character letter : inputCharacters.toCharArray()){
-            for(String word : words) {
-                if(word.contains(letter.toString())){
-                    ArrayList<String> letterWordsList = letterOccurrenceMap.get(letter);
+        for(String word : words) {
+            for(Character letter : word.toCharArray()){
+                ArrayList<String> letterWordsList = letterOccurrenceMap.get(letter);
 
-                    if(letterWordsList == null){
-                        letterWordsList = new ArrayList<String>();
-                    }
-
-                    if(!letterWordsList.contains(word)){
-                        letterWordsList.add(word);
-                        Collections.sort(letterWordsList);
-                    }
-
-                    letterOccurrenceMap.put(letter, letterWordsList);
+                if(letterWordsList == null){
+                    letterWordsList = new ArrayList<String>();
                 }
+
+                if(!letterWordsList.contains(word)){
+                    letterWordsList.add(word);
+                    Collections.sort(letterWordsList);
+                }
+
+                letterOccurrenceMap.put(letter, letterWordsList);
             }
         }
 
