@@ -2,7 +2,8 @@ package pl.pgedlek;
 
 import java.nio.CharBuffer;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 class StringIndexer {
     private String input;
@@ -17,9 +18,9 @@ class StringIndexer {
         this.input = input;
     }
 
-    private String buildResult(Map<Character, List<String>> letterOccurenceMap) {
+    private String buildResult(Map<Character, TreeSet<String>> letterOccurenceMap) {
         StringBuilder stringResult = new StringBuilder();
-        for (Map.Entry<Character, List<String>> entry : letterOccurenceMap.entrySet()) {
+        for (Map.Entry<Character, TreeSet<String>> entry : letterOccurenceMap.entrySet()) {
             stringResult.append(entry.getKey());
             stringResult.append(": ");
             stringResult.append(entry.getValue().toString().replaceAll(squareBracketsRegex, ""));
@@ -30,7 +31,7 @@ class StringIndexer {
     }
 
     String transform() {
-        Map<Character, List<String>> letterOccurrenceMap = new TreeMap<>();
+        Map<Character, TreeSet<String>> letterOccurrenceMap = new TreeMap<>();
 
         if(input.equals("")) {
             return input;
@@ -40,21 +41,18 @@ class StringIndexer {
         input = input.replaceAll(specialCharactersRegex, "");
 
         String[] words = input.split(" ");
-        Arrays.stream(words).parallel().forEach(word ->
-                CharBuffer.wrap(word).chars().parallel().forEach(letter ->
+        Arrays.stream(words).forEach(word ->
+                CharBuffer.wrap(word).chars().forEach(letter ->
                         {
-                            List<String> letterWordsList = letterOccurrenceMap.get((char)letter);
+                            TreeSet<String> letterWordsSet = letterOccurrenceMap.get((char)letter);
 
-                            if(letterWordsList == null){
-                                letterWordsList = Collections.synchronizedList(new ArrayList<>());
+                            if(letterWordsSet == null){
+                                letterWordsSet = new TreeSet<>();
                             }
 
-                            if(!letterWordsList.contains(word)){
-                                letterWordsList.add(word);
-                                Collections.sort(letterWordsList);
-                            }
+                            letterWordsSet.add(word);
 
-                            letterOccurrenceMap.put((char)letter, letterWordsList);
+                            letterOccurrenceMap.put((char)letter, letterWordsSet);
                         }
                 )
         );
