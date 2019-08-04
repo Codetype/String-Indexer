@@ -7,6 +7,9 @@ import java.util.Map;
 
 class StringIndexer {
     private String input;
+    private static final String squareBracketsRegex = "[\\[\\]]";
+    private static final String specialCharactersRegex = "[^a-zA-Z0-9\\s+]";
+    private static final String inputCharacters = "abcdefghijklmnopqrstuvwxyz";
 
     StringIndexer(String input){
         this.input = input;
@@ -17,7 +20,6 @@ class StringIndexer {
     }
 
     private String buildResult(Map<Character, ArrayList<String>> letterOccurenceMap) {
-        final String squareBracketsRegex = "[\\[\\]]";
         StringBuilder stringResult = new StringBuilder();
         for (Map.Entry<Character, ArrayList<String>> entry : letterOccurenceMap.entrySet()) {
             stringResult.append(entry.getKey());
@@ -30,9 +32,7 @@ class StringIndexer {
     }
 
     String transform() {
-        final String specialCharactersRegex = "[^a-zA-Z0-9\\s+]";
-        final String inputCharacters = "abcdefghijklmnopqrstuvwxyz";
-        Map<Character, ArrayList<String>> letterOccurenceMap = new LinkedHashMap<Character, ArrayList<String>>();
+        Map<Character, ArrayList<String>> letterOccurrenceMap = new LinkedHashMap<Character, ArrayList<String>>();
 
         if(input.equals("")) {
             return input;
@@ -46,7 +46,7 @@ class StringIndexer {
         for(Character letter : inputCharacters.toCharArray()){
             for(String word : words) {
                 if(word.contains(letter.toString())){
-                    ArrayList<String> letterWordsList = letterOccurenceMap.get(letter);
+                    ArrayList<String> letterWordsList = letterOccurrenceMap.get(letter);
 
                     if(letterWordsList == null){
                         letterWordsList = new ArrayList<String>();
@@ -57,11 +57,11 @@ class StringIndexer {
                         Collections.sort(letterWordsList);
                     }
 
-                    letterOccurenceMap.put(letter, letterWordsList);
+                    letterOccurrenceMap.put(letter, letterWordsList);
                 }
             }
         }
 
-        return buildResult(letterOccurenceMap);
+        return buildResult(letterOccurrenceMap);
     }
 }
