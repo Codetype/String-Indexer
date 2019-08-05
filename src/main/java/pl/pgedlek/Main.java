@@ -11,10 +11,10 @@ public class Main {
             BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/example.txt"));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
-            String ls = System.getProperty("line.separator");
+            String lineSeparator = System.getProperty("line.separator");
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
-                stringBuilder.append(ls);
+                stringBuilder.append(lineSeparator);
             }
 
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
