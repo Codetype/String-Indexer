@@ -21,7 +21,7 @@ class Constants {
                 "o: kota\n"+
                 "t: kota\n";
 
-        final static String INPUT_WITH_REPEATS = "ala ma kota, kot koduje w Javie kota";
+        final static String INPUT_WITH_REPEATS = "kota ala ma kota, kot kota Ala koduje w aLa, Javie kota";
         final static String OUTPUT_WITH_REPEATS = "a: ala, javie, kota, ma\n" +
                 "d: koduje\n" +
                 "e: javie, koduje\n" +

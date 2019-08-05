@@ -2,25 +2,15 @@ package pl.pgedlek;
 
 import java.nio.CharBuffer;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
-class StringIndexer {
-    private String input;
-    private static final String squareBracketsRegex = "[\\[\\]]";
-    private static final String specialCharactersRegex = "[^a-zA-Z0-9\\s+]";
-
-    StringIndexer(String input){
-        this.input = input;
+class StringIndexer extends AbstractStringIndexer{
+    StringIndexer(String input) {
+        super(input);
     }
 
-    void setInput(String input) {
-        this.input = input;
-    }
-
-    private String buildResult(Map<Character, TreeSet<String>> letterOccurenceMap) {
+    private String buildResult(Map<Character, TreeSet<String>> letterOccurrenceMap) {
         StringBuilder stringResult = new StringBuilder();
-        for (Map.Entry<Character, TreeSet<String>> entry : letterOccurenceMap.entrySet()) {
+        for (Map.Entry<Character, TreeSet<String>> entry : letterOccurrenceMap.entrySet()) {
             stringResult.append(entry.getKey());
             stringResult.append(": ");
             stringResult.append(entry.getValue().toString().replaceAll(squareBracketsRegex, ""));
@@ -44,15 +34,15 @@ class StringIndexer {
         Arrays.stream(words).forEach(word ->
                 CharBuffer.wrap(word).chars().forEach(letter ->
                         {
-                            TreeSet<String> letterWordsSet = letterOccurrenceMap.get((char)letter);
+                            TreeSet<String> letterWordsList = letterOccurrenceMap.get((char)letter);
 
-                            if(letterWordsSet == null){
-                                letterWordsSet = new TreeSet<>();
+                            if(letterWordsList == null){
+                                letterWordsList = new TreeSet<>();
                             }
 
-                            letterWordsSet.add(word);
+                            letterWordsList.add(word);
 
-                            letterOccurrenceMap.put((char)letter, letterWordsSet);
+                            letterOccurrenceMap.put((char)letter, letterWordsList);
                         }
                 )
         );
