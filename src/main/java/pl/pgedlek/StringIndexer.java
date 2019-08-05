@@ -8,18 +8,7 @@ class StringIndexer extends AbstractStringIndexer{
         super(input);
     }
 
-    private String buildResult(Map<Character, TreeSet<String>> letterOccurrenceMap) {
-        StringBuilder stringResult = new StringBuilder();
-        for (Map.Entry<Character, TreeSet<String>> entry : letterOccurrenceMap.entrySet()) {
-            stringResult.append(entry.getKey());
-            stringResult.append(": ");
-            stringResult.append(entry.getValue().toString().replaceAll(squareBracketsRegex, ""));
-            stringResult.append("\n");
-        }
-
-        return stringResult.toString();
-    }
-
+    @SuppressWarnings("Duplicates")
     String transform() {
         Map<Character, TreeSet<String>> letterOccurrenceMap = new TreeMap<>();
 
@@ -34,15 +23,15 @@ class StringIndexer extends AbstractStringIndexer{
         Arrays.stream(words).forEach(word ->
                 CharBuffer.wrap(word).chars().forEach(letter ->
                         {
-                            TreeSet<String> letterWordsList = letterOccurrenceMap.get((char)letter);
+                            TreeSet<String> letterWordsSet = letterOccurrenceMap.get((char)letter);
 
-                            if(letterWordsList == null){
-                                letterWordsList = new TreeSet<>();
+                            if(letterWordsSet == null){
+                                letterWordsSet = new TreeSet<>();
                             }
 
-                            letterWordsList.add(word);
+                            letterWordsSet.add(word);
 
-                            letterOccurrenceMap.put((char)letter, letterWordsList);
+                            letterOccurrenceMap.put((char)letter, letterWordsSet);
                         }
                 )
         );

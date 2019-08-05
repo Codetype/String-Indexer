@@ -9,20 +9,9 @@ class ParallelStringIndexer extends AbstractStringIndexer {
         super(input);
     }
 
-    private String buildResult(Map<Character, List<String>> letterOccurenceMap) {
-        StringBuilder stringResult = new StringBuilder();
-        for (Map.Entry<Character, List<String>> entry : letterOccurenceMap.entrySet()) {
-            stringResult.append(entry.getKey());
-            stringResult.append(": ");
-            stringResult.append(entry.getValue().toString().replaceAll(squareBracketsRegex, ""));
-            stringResult.append("\n");
-        }
-
-        return stringResult.toString();
-    }
-
+    @SuppressWarnings("Duplicates")
     String transform() {
-        Map<Character, List<String>> letterOccurrenceMap = new ConcurrentHashMap<>();
+        Map<Character, TreeSet<String>> concurrentLetterOccurrenceMap = new ConcurrentHashMap<>();
 
         if(input.equals("")) {
             return input;
@@ -33,26 +22,24 @@ class ParallelStringIndexer extends AbstractStringIndexer {
 
         String[] words = input.split(" ");
         Arrays.stream(words).parallel().forEach(word ->
-                CharBuffer.wrap(word).chars().parallel().forEach(letter ->
+                CharBuffer.wrap(word).chars()
+                        .forEach(letter ->
                         {
-                            List<String> letterWordsList = letterOccurrenceMap.get((char)letter);
+                            TreeSet<String> letterWordsTreeSet = concurrentLetterOccurrenceMap.get((char)letter);
 
-                            if(letterWordsList == null){
-                                letterWordsList = Collections.synchronizedList(new ArrayList<>());
+                            if(letterWordsTreeSet == null){
+                                letterWordsTreeSet = new TreeSet<>();
                             }
 
-                            if(!letterWordsList.contains(word)){
-                                letterWordsList.add(word);
-                                Collections.sort(letterWordsList);
-                            }
+                            letterWordsTreeSet.add(word);
 
-                            letterOccurrenceMap.put((char)letter, letterWordsList);
+                            concurrentLetterOccurrenceMap.put((char)letter, letterWordsTreeSet);
                         }
                 )
         );
 
-        TreeMap<Character, List<String>> sortedLetterOccurenceMap = new TreeMap<>(letterOccurrenceMap);
+        TreeMap<Character, TreeSet<String>> sortedLetterOccurrenceMap = new TreeMap<>(concurrentLetterOccurrenceMap);
 
-        return buildResult(sortedLetterOccurenceMap);
+        return buildResult(sortedLetterOccurrenceMap);
     }
 }
